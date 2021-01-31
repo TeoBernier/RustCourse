@@ -7,6 +7,20 @@ Cours tous les samedis en fin d'après-midi.
 Chaque partie est censée être présentée pendant une présentation de 30 à 45 minutes.\
 Chaque partie du projet est censé être faite d'une semaine à l'autre.
 
+## Ressources
+
+* [Playlist Des Cours](https://www.youtube.com/playlist?list=PLynr3Y6sISH7xuHdAHYdQe5c_PThVJCur)
+
+* [GitHub du Cours](https://github.com/Bari0th/RustCourse)\
+
+## Références
+
+* [Rust Book](https://doc.rust-lang.org/book/title-page.html)
+* [Rust By Example](https://doc.rust-lang.org/rust-by-example/index.html)
+* [Easy Rust](https://github.com/Dhghomon/easy_rust#part-1---rust-in-your-browser)
+
+## Contributions
+
 Toute issue sur :
 * des fautes :
   * d'orthographe
@@ -19,8 +33,6 @@ Toute issue sur :
   * sujets mal présentés
   
 sera la bienvenue !
-
-
 
 # Pour créer le pdf : 
   * Installer pandoc [ici](https://pandoc.org/installing.html).
