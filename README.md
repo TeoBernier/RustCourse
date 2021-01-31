@@ -18,7 +18,7 @@ Toute issue sur :
   * sujets qu'il faudrait mieux repousser à une autre partie
   * sujets mal présentés
   
-seront les bienvenues !
+sera la bienvenue !
 
 
 
