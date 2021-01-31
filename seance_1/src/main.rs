@@ -6,7 +6,7 @@
  * et v.len() pour avoir la longueur du vecteur.
  **/
 
-pub struct IterArray {
+ pub struct IterArray {
     v: Vec<usize>,
     // à remplir
 }

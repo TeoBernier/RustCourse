@@ -1,5 +1,5 @@
 [package]
-name = "rust_course"
+name = "seance_1"
 version = "0.1.0"
 authors = ["Barioth <bernier.teo@gmail.com>"]
 edition = "2018"
