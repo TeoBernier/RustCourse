@@ -11,7 +11,7 @@ Chaque partie du projet est censé être faite d'une semaine à l'autre.
 
 * [Playlist Des Cours](https://www.youtube.com/playlist?list=PLynr3Y6sISH7xuHdAHYdQe5c_PThVJCur)
 
-* [GitHub du Cours](https://github.com/Bari0th/RustCourse)\
+* [GitHub du Cours](https://github.com/Bari0th/RustCourse)
 
 ## Références
 
