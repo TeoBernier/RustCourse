@@ -1,3 +1,4 @@
+#![allow(unused_imports, dead_code, unused_variables)]
 /**
  * Le but est de faire un itérateur
  * sur les données du Vecteur.
@@ -6,7 +7,7 @@
  * et v.len() pour avoir la longueur du vecteur.
  **/
 
- pub struct IterArray {
+pub struct IterArray {
     v: Vec<usize>,
     // à remplir
 }
@@ -24,6 +25,9 @@ enum VecOption {
 // mais si vous avez d'autres idées, elles sont les bienvenues.
 // Vous ne devez juste pas utiliser les itérateurs déjà implémentés.
 fn main() {
+    use seance_1::use_person;
+    use_person();
+
     use VecOption::*;
     let v = vec![1, 2, 3, 4, 5];
 
