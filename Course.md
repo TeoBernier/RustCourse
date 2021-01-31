@@ -12,13 +12,25 @@ author: Téo Bernier
     Rust est un langage de programmation bas niveau. Bien qu'il offre une multitude de fonctionnalités assez puissantes (Possibilité de `Typage dynamique`, `Itérateurs`, `Collections`, `Async`, `Multi-Threading`, ...), il reste tout de même un langage assez proche de la machine quand il s'agit de la mémoire.
 Son efficacité vient surtout du fait que les abstractions qu'il propose sont astucieusement gérées à la compilation et non pendant le runtime.
 
-Par exemple, même si Rust propose du typage dynamique, la plupart des codes en Rust utilisera principalement du `typage statique` (potentiellement jusqu'à 10 fois plus rapide). De plus, il assure certaines sécurités statiquement (analyse pendant la compilation) comme les `data races`, les `dangling pointers`, et plus généralement, les `segmentation fault`.
+Par exemple, même si Rust propose du typage dynamique, la plupart des codes en Rust utilisera principalement du `typage statique` (potentiellement jusqu'à 10 fois plus rapide). De plus, il assure certaines sécurités statiquement (analyse pendant la compilation) comme les `data races`, les `dangling pointers`, et plus généralement, les `segmentation fault`.\
+
+# Ressources
+
+* [Playlist Des Cours](https://www.youtube.com/playlist?list=PLynr3Y6sISH7xuHdAHYdQe5c_PThVJCur)
+
+* [GitHub du Cours](https://github.com/Bari0th/RustCourse)\
 
 # Références
 
 * [Rust Book](https://doc.rust-lang.org/book/title-page.html)
 * [Rust By Example](https://doc.rust-lang.org/rust-by-example/index.html)
 * [Easy Rust](https://github.com/Dhghomon/easy_rust#part-1---rust-in-your-browser)
+
+
+
+
+
+
 
 \pagebreak
 
