@@ -628,7 +628,10 @@ struct Person {
 
 #[derive(Debug, Clone, Copy)]
 enum ColorEncoding {
-
+    RGBA(u8, u8, u8, u8),
+    RGB(u8, u8, u8),
+    GreyScale(u8),
+    // ...
 }
 ~~~~
 
