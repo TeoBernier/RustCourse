@@ -13,17 +13,26 @@ pub struct IterArray {
 }
 
 impl IterArray {
-    // à remplir
+    // Créer la fonction new (le code ressemblera pas mal à ce qu'il y a dans lib.rs)
+
+    // Remplir la fonction suivant
+    //
+    // Ca n'est pas important de le comprendre tout de suite :
+    //      Le '&mut self' sert ici, comme pour la fonction 'set_age' de Person
+    //      à changer l'objet, sans donner notre iterateur.
+    pub fn suivant(&mut self) -> VecOption {
+        // à remplir
+    }
 }
 
-enum VecOption {
+pub enum VecOption {
     VecSome(usize),
     VecNone,
 }
 
 // Il n'est pas nécessaire de modifier le main pour la solution initiale,
 // mais si vous avez d'autres idées, elles sont les bienvenues.
-// Vous ne devez juste pas utiliser les itérateurs déjà implémentés.
+// Vous ne devez juste pas utiliser les itérateurs déjà implémentés nativement dans Rust.
 fn main() {
     use seance_1::use_person;
     use_person();

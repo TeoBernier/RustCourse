@@ -379,17 +379,16 @@ enum ColorEncoding {
         alpha: u8,
     },
 
-    RGB {
-        red: u8, 
-        green: u8, 
-        blue: u8, 
-    },
     GreyScale {
         grey: u8,
     },
     // ...
 }
+~~~~
 
+\pagebreak
+
+~~~~ {#mycode .rust}
 let c = ColorEncoding::GreyScale {
     grey : 255,
 };
@@ -425,7 +424,7 @@ let Person {
 } = john;
 ~~~~
 
-Ici, on détruit alors la variable ```john``` pour créer les variables ```john_name``` et ```john_age```.
+Ici, on décompose alors la variable ```john``` pour créer les variables ```john_name``` et ```john_age```. Il faut bien noter qu'il ne sera plus possible d'utiliser ```john``` après. A moins que les valeurs extraites soient copiables (elles seront donc juste copiées, et ```john``` existera toujours (C'est une des conséquences du système d'ownership que l'on verra plus en détail plus tard)).
 
 \pagebreak
 
@@ -620,13 +619,16 @@ Ainsi, pour demander au compilateur de donner ces propriétés on utilise :
 // car copier une string ne se fait pas 
 // en temps constant, ça dépend de la 
 // taille de son buffer.
-// Sinon, il suffirait de rajouter Copie
-// dans derive
 
 #[derive(Debug, Clone)]
 struct Person {
     name: String,
     age: u8,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ColorEncoding {
+
 }
 ~~~~
 
