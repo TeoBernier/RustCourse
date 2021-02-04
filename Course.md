@@ -459,7 +459,8 @@ if let RGB(r, g, b) = c {
 
 while let RGB(r, g, b) = c {
     // Ici, ce n'est pas très intéressant... 
-    // Mais on verra que l'on peut trouver des moyens assez bien pour s'en servir.
+    // Mais on verra que l'on peut trouver 
+    // des moyens assez bien pour s'en servir.
 }
 ~~~~
 
@@ -565,7 +566,7 @@ fn main() {
 }
 ~~~~
 
-Ici, la doc des [Vecteur](https://doc.rust-lang.org/std/vec/struct.Vec.html).
+Ici, la doc des [Vecteurs](https://doc.rust-lang.org/std/vec/struct.Vec.html).
 
 \pagebreak
 
