@@ -29,16 +29,15 @@ Par exemple, même si Rust propose du typage dynamique, la plupart des codes en 
 
 
 
-
-
-
 \pagebreak
 
 # Partie I
 
 ##     L'utilisation de Cargo
 
-Cargo est un outil très simple à utiliser, il vous suffira de connaître :
+Cargo est le gestionnaire de package / gestionnaire de projet de Rust.
+
+C'est un outil très simple à utiliser, il vous suffira de connaître :
 
 * Gestion de projet :
   * ```cargo new project_name```\
@@ -65,9 +64,9 @@ Cargo est un outil très simple à utiliser, il vous suffira de connaître :
 
 ###    ```println!()```
 
-    La première chose que l'on peut voir est évidemment comment faire un `hello world`. On voit ici que la commande utilisée est `println!`.
+    La première chose que l'on peut voir est évidemment comment faire un ```hello world```. On voit ici que la commande utilisée est ```println!```.
 
-Le ```!``` indique ici que ce n'est pas une fonction, mais une macro. Un peu comme `printf` en C.\
+Le ```!``` indique ici que ce n'est pas une fonction, mais une macro. Un peu comme ```printf``` en C.\
 
 ~~~~ {#mycode .rust}
 fn main() {
@@ -76,7 +75,7 @@ fn main() {
 }
 ~~~~
 
-`println!` peut aussi permettre d'afficher des valeurs :\
+```println!``` peut aussi permettre d'afficher des valeurs :\
 
 ~~~~ {#mycode .rust}
 fn main() {
@@ -96,14 +95,14 @@ fn main() {
 }
 ~~~~
 
-Le ':' indique qu'il y a des options d'affichage, et le \# indique que c'est un affichage de Debug. En effet, les arrays n'ont pas d'affichage classique.
+Le ```:``` indique qu'il y a des options d'affichage, et le ```?``` indique que c'est un affichage de Debug. En effet, les arrays n'ont pas d'affichage classique.
 
 
 ###    Les variables
 
 #### Assignation\
 
-On peut utiliser des variables en Rust en utilisant le mot-clé `let`.
+On peut utiliser des variables en Rust en utilisant le mot-clé ```let```.
 
 
 ~~~~ {#mycode .rust}
@@ -128,12 +127,12 @@ u8 est un type représentant un entier non-signé sur 8 bits.
 
 #### Types Primitifs\
 
-Il y a ainsi pas mal de types basiques :
+Il y a ainsi pas mal de types primitifs :
 
-* ```u8, u16, u32, u64, u128, usize``` (usize est un entier de la taille que préfère la machine (u32 si processeur 32 bits, u64 si processeur 64 bits))
-* ```i8, i16, i32, i64, i128, isize```
+* ```u8, u16, u32, u64, u128, usize``` (unsigned int)
+* ```i8, i16, i32, i64, i128, isize``` (int)
 * ```f32, f64``` (floats)
-* ```char```
+* ```char``` (utf-8)
 * ```bool```
 * ```[type; N]``` (Où N est le nombre d'éléments dans le tableau)
 * ```(type, type, ..., type)``` (Un tuple avec possiblement différents types)
@@ -143,7 +142,7 @@ Il y a ainsi pas mal de types basiques :
 
 \pagebreak
 
-#### Immutabilité / Mutabilité\
+#### Immutabilité & Mutabilité\
 
 Une variable est de base immutable. C'est à dire qu'il est interdit de la modifier.\
 
@@ -155,7 +154,7 @@ fn main() {
 }
 ~~~~
 
-Il faut alors utiliser le mot-clé `mut`.\
+Il faut alors utiliser le mot-clé ```mut```.\
 
 ~~~~ {#mycode .rust}
 fn main() {
@@ -206,7 +205,7 @@ fn function_name(param1: Type1, param2: Type2, ...) -> ReturnType {
 ~~~~
 
 
-###    Les structures de contrôle
+###    Les Structures de Contrôle
 
 Comme pour les fonctions, les structures de contrôle sont évalués comme des expressions.\
 
@@ -269,12 +268,12 @@ for i in (0..150) {
 ~~~~
 
 
-###    Les Structures / Enumérations
+###    Les Structures & Enumérations
 
 
 #### Définition\
 
-En Rust, comme en C, il est possible de définir des `struct`.\
+En Rust, comme en C, il est possible de définir des ```struct```.\
 
 ~~~~ {#mycode .rust}
 // On accède aux champs via 
@@ -289,7 +288,7 @@ struct Person {
 struct Person(String, u8);
 ~~~~
 
-Pour les `enum`, c'est un peu pareil, sauf que l'on peut avoir plusieurs structures différentes :\
+Pour les ```enum```, c'est un peu pareil, sauf que l'on peut avoir plusieurs structures différentes :\
 
 ~~~~ {#mycode .rust}
 enum Color {
@@ -317,14 +316,8 @@ enum ColorEncoding {
     RGBA {
         red: u8, 
         green: u8, 
-        blue: u8, 
+        blue: u8,
         alpha: u8,
-    },
-
-    RGB {
-        red: u8, 
-        green: u8, 
-        blue: u8, 
     },
 
     GreyScale {
@@ -334,11 +327,9 @@ enum ColorEncoding {
 }
 ~~~~
 
-\pagebreak
-
 #### Construction\
 
-Pour les `struct` :\
+Pour les ```struct``` :\
 
 ~~~~ {#mycode .rust}
 struct Person {
@@ -358,7 +349,10 @@ struct Person(String, u8);
 let john = Person("John Doe".to_string(), 32);
 ~~~~
 
-Pour les `enum` :\
+\pagebreak
+
+
+Pour les ```enum``` :\
 
 ~~~~ {#mycode .rust}
 enum Color {
@@ -378,15 +372,12 @@ enum ColorEncoding {
         blue: u8, 
         alpha: u8,
     },
-
     GreyScale {
         grey: u8,
     },
     // ...
 }
 ~~~~
-
-\pagebreak
 
 ~~~~ {#mycode .rust}
 let c = ColorEncoding::GreyScale {
@@ -401,11 +392,11 @@ let c = GreyScale {
 ~~~~
 
 
-#### Déconstruction\
+#### Décomposition\
 
-Il est aussi possible de déconstruire des `struct` avec un `let` ou un `match` :\
+Il est aussi possible de décomposer des ```struct``` avec un ```let``` ou un ```match``` :\
 
-Pour les `struct` :\
+Pour les ```struct``` :\
 
 ~~~~ {#mycode .rust}
 struct Person {
@@ -425,8 +416,6 @@ let Person {
 ~~~~
 
 Ici, on décompose alors la variable ```john``` pour créer les variables ```john_name``` et ```john_age```. Il faut bien noter qu'il ne sera plus possible d'utiliser ```john``` après. A moins que les valeurs extraites soient copiables (elles seront donc juste copiées, et ```john``` existera toujours (C'est une des conséquences du système d'ownership que l'on verra plus en détail plus tard)).
-
-\pagebreak
 
 On peut faire pareil avec les pattern matching, et encore même mieux avec les enums :\
 
@@ -452,7 +441,29 @@ match c {
 }
 ~~~~
 
-#### Methode pour struct / enum\
+\pagebreak
+
+Un autre cas particulier qui est très intéressant, et d'utiliser (un peu à l'idée du pattern matching) la décomposition dans des stuctures de contrôles. On peut alors avoir quelque chose comme :
+
+~~~~ {#mycode .rust}
+let c = RGB(255,0, 0);
+
+if let RGB(r, g, b) = c {
+    // r, g et b ne sont accessibles que dans cette scope.
+    // si l'on sort de ce bloc de code, on ne peut plus y accéder
+} else {
+    ...
+}
+
+// Ou du même type :
+
+while let RGB(r, g, b) = c {
+    // Ici, ce n'est pas très intéressant... 
+    // Mais on verra que l'on peut trouver des moyens assez bien pour s'en servir.
+}
+~~~~
+
+#### Méthodes\
 
 Il est possible, comme dans les langages objets (Rust n'est pas un langage objet), de définir des méthodes pour nos types personnalisés :\
 
@@ -480,7 +491,7 @@ let john = Person::new("John Doe".to_string(), 32);
 
 Rust a un système de module assez simple. Ainsi, de base, chaque fichier est considéré comme un module. Ainsi, tous ce qui est dans un module peut-être utilisé sans problème, que ce soit public ou privé. Mais quand on importe des structures, il faut que ces structures soit publiques, et on ne pourra alors appeler que leurs fonctions publiques.
 
-Tout est de base privé en Rust. Il faut alors utiliser le mot-clé `pub` afin de définir que quelque chose est public. Le constructeur de structure (```struct_name(expr1, expr2, ...)```) est d'ailleurs privé, d'où l'utilité de définir des méthodes `new` publiques.
+Tout est de base privé en Rust. Il faut alors utiliser le mot-clé ```pub``` afin de définir que quelque chose est public. Le constructeur de structure (```struct_name(expr1, expr2, ...)```) est d'ailleurs privé, d'où l'utilité de définir des méthodes ```new``` publiques.
 
 ~~~~ {#mycode .rust}
 // fichier person.rs
@@ -554,7 +565,7 @@ fn main() {
 }
 ~~~~
 
-Ici, la doc des [Vec](https://doc.rust-lang.org/std/vec/struct.Vec.html).
+Ici, la doc des [Vecteur](https://doc.rust-lang.org/std/vec/struct.Vec.html).
 
 \pagebreak
 
@@ -610,7 +621,7 @@ Ici, je vais juste vous expliquer comment on demande au compilateur de donner ce
 
 Si vous vous rappelez, je parlais de ```Debug``` pour l'affichage. Cela correspond à la propriété ```Debug```.
 
-On a aussi une propriété ```Clone```, qui permet de cloner une structure. La grande différence entre Copy et Clone, est que Copie doit toujours être en temps constant (le temps de copie ne doit pas varier selon ce que contient la structure), alors que le clone peut prendre autant de temps qu'il veut.
+On a aussi une propriété ```Clone```, qui permet de cloner une structure. La grande différence entre ```Copy``` et ```Clone```, pour simplifier, est que ```Copy``` doit toujours être en temps constant (le temps de copie ne doit pas varier selon ce que contient la structure), alors que le clone peut prendre autant de temps qu'il veut. Il faut donc voir ```Copy``` comme un cas particulier de ```Clone```.
 
 Ainsi, pour demander au compilateur de donner ces propriétés on utilise :
 
