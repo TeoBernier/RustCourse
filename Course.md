@@ -647,3 +647,380 @@ enum ColorEncoding {
 }
 ~~~~
 
+\pagebreak
+
+# Partie 2
+
+Références : [Understanding Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html)  &  [Validating References with Lifetimes](https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html)
+  
+##     Retour sur l'ownership
+
+
+###     La Pile et le Tas
+
+La Pile et le Tas sont deux zones mémoires différentes qui servent deux objectifs bien différents : 
+* La pile sert à l'allocation de zones de mémoires définies à la compilation. Chaque fonction agrandit la pile autant qu'elle veut, afin d'y stocker ses variables locales, mais tout ça doit être défini à la compilation. De plus, à la sortie de la fonction tout ce qui était stocké dans la pile sera désalloué. C'est donc un bon moyen de stockage temporaire, qui nécessite de connaître à l'avance la taille de chaque élément qu'elle devra contenir.
+* Le tas en revanche permet des allocations de mémoires dont on ne connait pas forcément la taille à la compilation mais qu'on connaîtra pendant le runtime. Ainsi, tout type contenant des attributs de taille variable (Sting, Vecteur, etc...) auront forcément une partie de leur structure dans le tas.
+
+#### Les String\
+
+Pour les String, par exemple, on utilise une structure de contrôle dans la pile qui contient :
+
+* la capacité maximale et la capacité actuelle (en bytes, pas en charactères)
+* un pointeur (ou référence) vers le buffer de charactères
+
+Ainsi, le buffer de charactères sera stocké dans le tas, car il a une taille variable.
+
+#### Les Entiers\
+
+Un entier n'est lui constitué que d'une valeur sur 8, 16, 32, 64 ou 128 bits. De plus, cette taille sera définit précisément par le type de l'entier.
+
+Imaginons que l'on veuille un type Entier, qui puisse avoir la taille que l'on souhaite :
+
+Ce type sera-t'il stocké dans la pile ou dans le tas ?
+
+~~~~ {#mycode .rust}
+// Si on reprend les nomenclatures de C
+// On aura ça, à peu de chose près
+enum Entier {
+    Char(i8),
+    Short(i16),
+    Int(i32),
+    LongInt(isize),
+    LongLongInt(i64),
+    VeryLongInt(i128),
+}
+~~~~
+
+\pagebreak
+
+Et bien ce type Entier sera stocké dans la pile car peu importe la variante dans laquelle on est, il aura toujours la même taille : 128 bits (+ 8 bits si nécéssaire pour stocker la variante actuelle).
+
+En revanche, les calculs que l'on fera seront plus rapide que de toujours prendre directement un ```i128```, car si l'on fait une addition, on pourra faire directement une addition entre deux ```i32``` ou deux ```i64```, au lieu de toujours utiliser des ```i128```.
+
+###     Copy, Move et Clone
+
+Dans la partie précédente, on avait très vite parlé de ```Copy``` et de ```Clone```. On avait dit que ```Copy``` devait toujours être en temps constant, alors que ça n'avait pas trop d'importance pour ```Clone```.
+
+Cette différence entre ```Copy``` et ```Clone``` vient du fait que ```Clone``` doit copier toute la structure, même la partie dans le tas dont la taille peut changer (deep copy), alors que ```Copy``` ne fait qu'une copie des champs de la structure (shallow copy).
+
+Ainsi, chaque structure voulant implémenter ```Copy``` doit vérifier, pour chacun de ses champs qu'il n'utilise que la pile (équivalent à implémenter ```Copy```).
+
+On a pas vraiment abordé le ```Move``` jusqu'à présent. Ce n'est pas une propriété contrairement à ```Copy``` et ```Clone```. Mais une conséquence du fait de ne pas implémenter ```Copy```. Je vous ai déjà dit que donner une structure non-copiable à une fonction est définitif, on ne peut plus l'utiliser après. 
+
+Cela est dû au fait que l'on a ```Move``` la structure. C'est à dire que l'on a copié ses champs un à un (comme ```Copy```), mais que comme la structure n'avait pas la propriété ```Copy```, les deux structures seront potentiellement en conflit (Deux String ayant le même buffer par exemple). Pour empêcher cela, Rust n'autorise donc plus l'accès à l'ancienne structure.
+
+#### Notre première rencontre avec Move\
+
+Voilà un code que nous avions vu dans la première scéance.
+
+~~~~ {#mycode .rust}
+fn main() {
+    // On crée john
+    let john = Person::default();
+
+    // Ici, on move john car 
+    // john n'est pas copiable
+    let john2 = john;
+
+    // Donc john n'est plus accessible
+    // Ca ne compilera donc pas
+    // println!("{:?}", john); 
+}
+~~~~
+
+#### Arrays\
+
+Ainsi, un array dont la taille est connue à la compilation et qui se trouve donc dans la pile devrait être copiable.
+
+~~~~ {#mycode .rust}
+fn main() {
+    // Crée un tableau de 200 000 cases.
+    // a est ici de type : [i32, 200_000]
+    // la taille de a est alors de 800 ko
+    let a = [0; 200_000];
+
+    // Si jamais on copie a dans b, on a alors besoin
+    // de doubler la place dans la pile
+    // On atteint alors 1.6 Mo
+    //let b = a;
+
+    // ne pas print le tableau
+    // Ca sert juste à vérifier que
+    // le compilo ne crie pas si on accède
+    // à notre ancien tableau
+    // preuve qu'il implémente Copy
+    //println!("{:?}", a);
+}
+~~~~
+
+J'ai trouvé que la [taille maximum de la pile](https://cs.nyu.edu/exact/core/doc/stackOverflow.txt) pour Windows (gcc ou msvc) ne peut dépasser 1Mo, ainsi, si l'on copie l'array, on fait un stack overflow.
+
+Sur Linux, il faudra probablement utiliser un array de 1 600 000 éléments.
+
+###     Utilité de l'ownership
+
+Il permet d'éviter les conflits entre plusieurs structures. Si l'on commence à utiliser plusieurs threads, il nous permettra donc d'éviter les data races. Il permet aussi de respecter les règles de borrowing (que l'on verra juste après). Et comme présenté la première fois, permet une gestion totale de la mémoire.
+
+\pagebreak
+
+##     Les Références et le Borrowing
+
+En plus de l'ownership, Rust utilise d'autres moyens afin de protéger les utilisateurs des data races et des segmentation faults tout en permettant de facilement faire du multi-threading très optimisé !
+
+Rust introduit alors le Borrowing (emprunt) qui permet d'utiliser des références.
+
+###     Références
+
+Passer une structure par référence permet de ne pas effectuer de ```Move``` et donc de ne pas donner notre structure si celle-ci n'est pas copiable. En revanche, si cette dernière est copiable, alors on donnera une copie à la fonction, et la structure que l'on garde ne pourra donc pas être modifiée par la fonction qui n'aura alors qu'une copie locale. Pour la modifier, il faudra alors donner à la fonction une référence mutable.
+
+De plus, si notre structure est énorme (Comme l'array qui faisait un stack overflow), il sera sûrement préférable de ne passer qu'un pointeur vers cet array, sans devoir tout recopier sur la pile.
+
+###     Règles à respecter
+
+Ainsi, pour avoir une référence sur une structure, il faut la borrow (l'emprunter). C'est à dire qu'on donne temporairement notre structure. On ne pourra alors plus la modifier, mais on pourra toujours y accéder de manière immutable.
+
+Si on essaye de modifier une valeur borrowed :\
+
+~~~~ {#mycode .rust}
+fn main() {
+    let mut a = 10;
+    let b = &a;
+
+    // a est toujours accessible
+    println!("{}", a);
+
+    // Ne compilera pas
+    // car a est borrowed
+    a = 12;
+    println!("{}", b);
+}
+~~~~
+
+\pagebreak
+
+Si on attend avant de la modifier :\
+
+~~~~ {#mycode .rust}
+fn main() {
+    let mut a = 10;
+    let b = &a;
+
+    // a est toujours accessible
+    println!("{}", a);
+
+    println!("{}", b);
+    // b n'est plus utilisé après
+    // a n'est donc plus borrowed
+
+    // Compile sans problème
+    a = 12;
+}
+~~~~
+
+De plus, pôur éviter les data races, on définit 2 règles :
+
+Il peut y avoir soit :
+
+* Un seul borrow mutable (dans ce cas là, la variable de base ne peut même plus lire son contenu le temps du borrow)
+* Une multitude de borrow seulement immutables (comme vu précédemment, on peut accéder à la variable originale, mais on ne peut pas la modifier)
+
+On ne peut pas utiliser a :
+
+~~~~ {#mycode .rust}
+fn main() {
+    let mut a = 10;
+    let b = &mut a;
+
+    // Cannot use a as it is mutably borrowed
+    let c = a;
+
+    println!("{}", b);
+}
+~~~~
+
+On ne peut pas borrowed une structure déjà mutably borrowed :
+
+~~~~ {#mycode .rust}
+fn main() {
+    let mut a = 10;
+    let b = &mut a;
+    // cannot borrow `a` as mutable 
+    // more than once at a time
+    let c = &mut a;
+    println!("{}", b);
+}
+~~~~
+
+\pagebreak
+
+On ne peut pas mutably borrowed une structure déjà borrowed :
+
+~~~~ {#mycode .rust}
+fn main() {
+    let mut a = 10;
+    let b = &a;
+    let c = b;
+    let d = c;
+    
+    // cannot borrow `a` as mutable
+    // because it is also borrowed as immutable
+    let e = &mut a;
+
+    println!("{}", b);
+    println!("{}", c);
+    println!("{}", d);
+}
+~~~~
+
+
+##     Le Lifetime
+
+Le ```Lifetime``` permet d'éviter les dangling pointers (pointeur pointant vers une structure que n'existe plus).
+
+Ainsi, quand on borrow une variable, la référence ne pourra être utilisée que tant que la variable originale existera.
+
+Par exemple :\
+
+~~~~ {#mycode .rust}
+fn main() {
+    let reference;
+    {
+        // Ici, a n'existe que dans 
+        // dans cette scope
+        let a = 0;
+        reference = &a;
+    }
+    // a n'existe plus ici
+
+    // on aura alors l'erreur :
+    // borrowed value does 
+    // not live long enough
+
+    println!("{}", reference);
+}
+~~~~
+
+Ainsi, si l'on veut créer une fonction qui renvoie une structure dépendante d'une référence, alors il faudra préciser que la structure renvoyée à le même ```Lifetime``` que la référence en paramètre.
+
+\pagebreak
+
+Par exemple, si l'on prend une slice de String, et qu'on veut renvoyer la première partie du slice avant un certain pattern :
+
+
+~~~~ {#mycode .rust}
+// parfois, le Lifetime est évident
+// ici, on voit bien que le Lifetime du retour
+// dépend de référence
+fn before_dot(reference: &str) -> &str {
+    reference.split('.').next().unwrap()
+}
+
+//en revanche, ici, on ne sait pas vraiment
+//de quel Lifetime on dépend: celui de 
+// référence, ou celui de pattern ?
+fn before_pattern<'a>(reference: &'a str, pattern: &str) -> &'a str {
+    reference.split(pattern).next().unwrap()
+}
+
+fn main() {
+    let hello;
+    {
+        let s = String::from("Hello. World!");
+        hello = before_pattern(&s, ".");
+    }
+
+    // On a alors la même erreur qu'avant
+    println!("{}", hello);
+}
+~~~~
+
+On peut aussi avoir un ```Lifetime``` dans une structure, alors, le ```Lifetime``` fait partie du type de la structure :
+
+
+~~~~ {#mycode .rust}
+struct Person<'a> {
+    name: &'a str,
+    age: u8,
+}
+
+fn main() {
+    // plus besoin de mettre des
+    // to_string() partout !
+    let john = Person {
+        name: "John Doe",
+        age: 32,
+    };
+}
+~~~~
+
+\pagebreak
+
+Si on commence à définir des méthodes pour une structure avec ```Lifetime``` :\
+
+~~~~ {#mycode .rust}
+impl<'a> Person<'a> {
+    // Ici, le lifetime est obvious
+    // pas besoin de le spécifié
+    pub fn new(name: &str, age: u8) -> Person {
+        Person { name, age }
+    }
+
+    // Si on veut permettre à with_name de changer le lifetime
+    // de notre person, il faut en créer une autre
+    // Rust nous dit ici que le Lifetime est obvious
+    pub fn with_name<'b>(self, name: &'b str) -> Person<'b> {
+        Person {
+            name,
+            age: self.age,
+        }
+    }
+
+    // Ici, on s'assure que le lifetime de
+    // notre nouveau nom sera le même que celui
+    // de l'ancien
+    pub fn set_name(&mut self, name: &'a str) {
+        self.name = name;
+    }
+}
+
+fn main() {
+    // plus besoin de mettre des
+    // to_string() partout !
+    let mut john = Person::new("John Doe", 32);
+
+    {
+        let joe = "joe".to_string();
+        // ainsi, si le lifetime est différent,
+        // on ne peut pas changer notre nom
+        john = john.with_name(&joe);
+
+        // Si on commente cette ligne, on a eu erreur
+        // car joe ne vit pas assez longtemps
+        john = john.with_name("John Doe");
+    }
+
+    println!("{:?}", john);
+}
+~~~~
+
+Pour la fonction ```set_name```, je ne pense pas qu'il soit possible de modifier le ```Lifetime``` de la ```Person``` que l'on manipule. Car, quand on prend une ```&'a str```, le ```'a``` est déjà défini car il correspond au ```'a``` de ```Person<'a>```. Cela oblige la slice à avoir le même ```Lifetime``` que notre structure.
+
+On pourrait, comme pour ```with_name```, prendre un autre ```Lifetime```, mais je ne vois pas comment changer le type de la ```Person```, alors que l'on a qu'une référence mutable sur cette ```Person```.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
